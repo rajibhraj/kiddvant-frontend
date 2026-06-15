@@ -115,28 +115,28 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
       <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900 text-white p-6 font-sans">
         <div className="max-w-xl w-full bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 p-8 text-center">
           {/* Status Badge */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-6 bg-red-500/10 text-red-400 border border-red-500/20">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+          <div className="inline-flex roboto items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-6 bg-red-500/10 text-red-400 border border-red-500/20">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse roboto" />
             Status: {config.status}
           </div>
 
-          <h1 className="text-3xl font-extrabold text-white tracking-tight mb-4">
+          <h1 className="text-3xl roboto font-extrabold text-white mb-4">
             {config.alertTitle || "System Maintenance"}
           </h1>
           
-          <p className="text-lg text-slate-300 mb-6 font-medium leading-relaxed">
+          <p className="text-lg roboto text-slate-300 mb-6 font-medium leading-relaxed tracking-wide">
             {config.alertMessage || "We are currently updating our website. Please check back later."}
           </p>
 
           <div className="bg-slate-900/50 rounded-xl p-5 border border-slate-700/50 text-left text-slate-400 text-sm mb-8 whitespace-pre-wrap leading-relaxed">
-            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 font-mono">Details</h4>
+            <h4 className="text-xs roboto font-bold text-slate-500 uppercase tracking-widest mb-2 font-mono">Details</h4>
             {config.maintenanceDescription || "The site is temporarily offline for scheduled upgrades."}
           </div>
 
           {config.ctaText && (
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30"
+              className="px-6 py-3 bg-indigo-600 roboto hover:bg-indigo-500 active:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30"
             >
               {config.ctaText}
             </button>
