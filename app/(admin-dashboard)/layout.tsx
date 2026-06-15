@@ -1,15 +1,71 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, ShoppingBag, ClipboardList, LogOut } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LayoutDashboard, ShoppingBag, ClipboardList, LogOut, Settings } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [authorized, setAuthorized] = useState(false);
+  const [adminName, setAdminName] = useState("Admin");
+  const [adminRole, setAdminRole] = useState<string | null>(null);
   
   // লগইন পেজে সাইডবার ও হেডার হাইড করার জন্য
   const isLoginPage = pathname === "/login";
+
+  useEffect(() => {
+    // Skip auth guard on login page
+    if (isLoginPage) {
+      setAuthorized(true);
+      return;
+    }
+
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      router.push("/login");
+    } else {
+      const userStr = localStorage.getItem("adminUser");
+      let role = null;
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          if (user && user.name) {
+            setAdminName(user.name);
+          }
+          if (user && user.role) {
+            role = user.role;
+            setAdminRole(user.role);
+          }
+        } catch (e) {
+          console.error("Failed to parse user details:", e);
+        }
+      }
+
+      // Role authorization check for control settings page
+      if (pathname === "/admin/control-center-x7" && role !== "superSuperAdmin") {
+        router.push("/dashboard");
+      } else {
+        setAuthorized(true);
+      }
+    }
+  }, [pathname, isLoginPage, router]);
+
+  const handleLogout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminUser");
+    router.push("/login");
+  };
+
+  if (!authorized) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-gray-50">
+        <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (isLoginPage) {
     return <div className="admin-layout bg-gray-50 min-h-screen">{children}</div>;
@@ -20,6 +76,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Products", href: "/products-management", icon: ShoppingBag },
     { name: "Orders", href: "/orders-management", icon: ClipboardList },
   ];
+
+  if (adminRole === "superSuperAdmin") {
+    menuItems.push({
+      name: "Site Control",
+      href: "/admin/control-center-x7",
+      icon: Settings,
+    });
+  }
 
   return (
     <div className="admin-layout flex h-screen bg-gray-100 antialiased">
@@ -47,10 +111,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
         </div>
         <div className="p-5 border-t border-slate-800">
-          <Link href="/login" className="flex items-center space-x-3 text-slate-400 hover:text-red-400 py-2">
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center space-x-3 text-slate-400 hover:text-red-400 py-2 text-left cursor-pointer focus:outline-none transition-colors"
+          >
             <LogOut size={20} />
             <span>Logout</span>
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -62,9 +129,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {menuItems.find((m) => m.href === pathname)?.name || "Dashboard"}
           </h1>
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-slate-600 font-medium">Welcome, Admin</span>
-            <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
-              A
+            <span className="text-sm text-slate-600 font-medium">Welcome, {adminName}</span>
+            <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold uppercase">
+              {adminName.charAt(0)}
             </div>
           </div>
         </header>
