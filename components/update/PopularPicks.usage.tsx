@@ -139,7 +139,7 @@ export default function PopularPicksPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className=" bg-white">
       <PopularPicks products={fetchedProducts} onAddToCart={handleAddToCart} />
     </main>
   );

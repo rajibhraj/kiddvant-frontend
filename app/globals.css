@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 /* @import "shadcn/tailwind.css"; */
@@ -200,6 +201,11 @@
 }
 
 
-*{ 
+* { 
   font-family: "Patrick Hand", cursive; 
+}
+
+/* Force Roboto font family inside admin dashboard views, overriding wildcard styles */
+.admin-layout, .admin-layout * {
+  font-family: 'Roboto', sans-serif !important;
 }

@@ -12,7 +12,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const isLoginPage = pathname === "/login";
 
   if (isLoginPage) {
-    return <div className="bg-gray-50 min-h-screen">{children}</div>;
+    return <div className="admin-layout bg-gray-50 min-h-screen">{children}</div>;
   }
 
   const menuItems = [
@@ -22,7 +22,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div className="flex h-screen bg-gray-100 font-sans antialiased">
+    <div className="admin-layout flex h-screen bg-gray-100 antialiased">
       {/* Sidebar */}
       <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between hidden md:flex">
         <div className="p-5">
