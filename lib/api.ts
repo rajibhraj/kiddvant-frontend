@@ -258,3 +258,76 @@ export const updateOrderStatus = async (orderId: string, status: string, payment
 
   return data;
 };
+
+/**
+ * Log in superAdmin and return JWT token and admin info.
+ */
+export const loginAdmin = async (email: string, password: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/auth/login`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Login failed (status ${response.status})`);
+  }
+
+  return data;
+};
+
+/**
+ * Fetches the site configuration state.
+ */
+export const fetchSiteConfig = async () => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/site-config`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json",
+    },
+    // Prevent Next.js from caching this call too aggressively if using SSG/ISR
+    cache: "no-store",
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Failed to fetch site config (status ${response.status})`);
+  }
+
+  return data;
+};
+
+/**
+ * Updates the site configuration state.
+ */
+export const updateSiteConfig = async (configData: any, token: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/site-config`;
+
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify(configData),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Failed to update site config (status ${response.status})`);
+  }
+
+  return data;
+};
