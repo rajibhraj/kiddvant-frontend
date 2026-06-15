@@ -20,6 +20,8 @@ export interface Product {
   color?: string;
   size_range?: string;
   size?: string;
+  _id?: string;
+  productId?: string;
 }
 
 export const products: Product[] = [

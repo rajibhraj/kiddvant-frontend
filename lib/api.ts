@@ -129,7 +129,9 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
     size: parsedDesc["Size"],
     function: parsedDesc["Function"],
     color_variant: parsedDesc["Color Variant"],
-    color: parsedDesc["Color"]
+    color: parsedDesc["Color"],
+    _id: apiProduct._id,
+    productId: apiProduct.productId
   };
 };
 
@@ -164,4 +166,95 @@ export const fetchProducts = async (fallbackData: Product[]): Promise<Product[]>
     console.error("Failed to fetch products from API, using fallback data:", error);
     return fallbackData;
   }
+};
+
+/**
+ * Places a new order on the backend API.
+ */
+export const placeOrder = async (orderData: {
+  customerInfo: { fullName: string; phone: string; email?: string };
+  shippingAddress: { address: string; city: string; postalCode?: string };
+  items: Array<{
+    _id?: string;
+    productId?: string;
+    product_name: string;
+    price_bdt: number;
+    quantity: number;
+    product_image?: string;
+  }>;
+  paymentMethod: string;
+  shippingCost: number;
+  subtotal: number;
+  total: number;
+  notes?: string;
+}) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/orders`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: JSON.stringify(orderData),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Failed to place order (status ${response.status})`);
+  }
+
+  return data;
+};
+
+/**
+ * Fetches all orders from the backend API.
+ */
+export const fetchOrders = async () => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/orders`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json",
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Failed to fetch orders (status ${response.status})`);
+  }
+
+  return data;
+};
+
+/**
+ * Updates the status of a specific order.
+ */
+export const updateOrderStatus = async (orderId: string, status: string, paymentStatus?: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/orders/${orderId}/status`;
+
+  const body: any = { status };
+  if (paymentStatus) {
+    body.paymentStatus = paymentStatus;
+  }
+
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Failed to update order status (status ${response.status})`);
+  }
+
+  return data;
 };

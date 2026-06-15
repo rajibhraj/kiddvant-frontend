@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
+import { placeOrder } from "@/lib/api";
 
 // ── Types ─────────────────────────────────────────────────────────────
 interface OrderData {
@@ -79,6 +80,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     fullName: "", phone: "", email: "", address: "", city: "", postalCode: "", notes: "",
   });
   const [errors, setErrors] = useState<Partial<Record<keyof OrderData, string>>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const subtotal = getCartTotal();
   const shipping = subtotal >= 2000 ? 0 : 120;
@@ -97,6 +99,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         setView("cart");
         setFormData({ fullName: "", phone: "", email: "", address: "", city: "", postalCode: "", notes: "" });
         setErrors({});
+        setSubmitError(null);
       }, 400);
       return () => clearTimeout(t);
     }
@@ -115,12 +118,48 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const handlePlaceOrder = async () => {
     if (!validate()) return;
     setIsPlacing(true);
-    await new Promise((r) => setTimeout(r, 1800));
-    const id = `KV-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
-    setOrderId(id);
-    clearCart();
-    setIsPlacing(false);
-    setView("success");
+    setSubmitError(null);
+    try {
+      const orderData = {
+        customerInfo: {
+          fullName: formData.fullName,
+          phone: formData.phone,
+          email: formData.email || undefined,
+        },
+        shippingAddress: {
+          address: formData.address,
+          city: formData.city,
+          postalCode: formData.postalCode || undefined,
+        },
+        items: cart.map((item) => ({
+          _id: item._id,
+          productId: item.productId,
+          product_name: item.product_name,
+          price_bdt: item.price_bdt,
+          quantity: item.quantity,
+          product_image: item.product_image,
+        })),
+        paymentMethod: paymentMethod,
+        shippingCost: shipping,
+        subtotal: subtotal,
+        total: total,
+        notes: formData.notes || undefined,
+      };
+
+      const result = await placeOrder(orderData);
+      if (result.success && result.data) {
+        setOrderId(result.data.orderId);
+        clearCart();
+        setView("success");
+      } else {
+        throw new Error(result.message || "Failed to place order");
+      }
+    } catch (err: any) {
+      console.error("Error placing order:", err);
+      setSubmitError(err.message || "Something went wrong while placing the order. Please try again.");
+    } finally {
+      setIsPlacing(false);
+    }
   };
 
   const inputCls = (field: keyof OrderData) =>
@@ -284,6 +323,11 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           {/* ═══════════ CHECKOUT VIEW ═══════════ */}
           {view === "checkout" && (
             <div className="px-5 py-4 space-y-4">
+              {submitError && (
+                <div className="bg-red-50 text-red-600 text-xs rounded-xl p-3 border border-red-200">
+                  ⚠️ {submitError}
+                </div>
+              )}
 
               {/* Step 1: Contact Info */}
               <div className="bg-gray-50/80 rounded-2xl p-4 space-y-3 border border-gray-100">
