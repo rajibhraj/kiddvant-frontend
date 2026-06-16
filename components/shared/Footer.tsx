@@ -92,19 +92,20 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: InstagramIcon, href: "#", label: "Instagram" },
-  { icon: FacebookIcon, href: "#", label: "Facebook" },
-  { icon: Music2, href: "#", label: "TikTok" },
-  { icon: PinterestIcon, href: "#", label: "Pinterest" },
-  { icon: TwitterIcon, href: "#", label: "Twitter" },
-  { icon: YoutubeIcon, href: "#", label: "YouTube" },
+  { icon: InstagramIcon, href: "https://www.instagram.com/kiddvant", label: "Instagram" },
+  { icon: FacebookIcon, href: "https://www.facebook.com/KiddVant/", label: "Facebook" },
+  { icon: Music2, href: "https://www.tiktok.com/@kiddvant?_r=1&_t=ZS-97C4usWYXgq", label: "TikTok" },
+  // { icon: PinterestIcon, href: "#", label: "Pinterest" },
+  // { icon: TwitterIcon, href: "#", label: "Twitter" },
+  { icon: YoutubeIcon, href: "https://youtube.com/@kiddvant?si=0-u9aI3dSarlde_B", label: "YouTube" },
 ];
 
 import { usePathname } from "next/navigation";
 
 const legalLinks = [
-  { label: "Terms", href: "#" },
-  { label: "Privacy Notice", href: "#" },
+  { label: "Terms", href: "/terms" },
+  { label: "Privacy Notice", href: "/privacy" },
+  { label: "Arbitration Agreement", href: "/arbitration" },
   { label: "Accessibility Statement", href: "#" },
   { label: "CA Supply Chain Act", href: "#" },
   { label: "Do Not Sell or Share My Personal Information", href: "#" },
@@ -267,15 +268,15 @@ export default function Footer() {
                   />
                   <label htmlFor="agree" className="text-white/80 text-xs leading-relaxed">
                     By providing your email address, you agree to our{" "}
-                    <Link href="#" className="underline hover:text-white">
+                    <Link href="/terms" className="underline hover:text-white">
                       Terms of Use
                     </Link>
                     ,{" "}
-                    <Link href="#" className="underline hover:text-white">
+                    <Link href="/privacy" className="underline hover:text-white">
                       Privacy Notice
                     </Link>
                     , and{" "}
-                    <Link href="#" className="underline hover:text-white">
+                    <Link href="/arbitration" className="underline hover:text-white">
                       Arbitration Agreement
                     </Link>
                   </label>
@@ -294,12 +295,12 @@ export default function Footer() {
                     <social.icon size={20} />
                   </Link>
                 ))}
-                <button
+                {/* <button
                   className="text-white/80 hover:text-white transition"
                   aria-label="Accessibility"
                 >
                   <Accessibility size={20} />
-                </button>
+                </button> */}
               </div>
             </div>
           </div>

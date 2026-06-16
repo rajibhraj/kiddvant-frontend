@@ -90,7 +90,7 @@ export default function SiteControlPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4 font-sans text-slate-800">
+    <div className="max-w-4xl mx-auto py-8 lg:px-4 font-sans text-slate-800">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
@@ -121,7 +121,7 @@ export default function SiteControlPage() {
       {/* Main Settings Form */}
       <form onSubmit={handleSave} className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
         {/* Top Control Panel */}
-        <div className="p-8 border-b border-slate-100 bg-slate-50/50">
+        <div className="p-4 lg:p-8 border-b border-slate-100 bg-slate-50/50">
           <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
             <Server className="w-5 h-5 text-indigo-500" />
             Operational State
