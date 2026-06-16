@@ -214,3 +214,8 @@
 .roboto {
   font-family: 'Roboto', sans-serif !important;
 }
+
+/* Force monospace/Courier New warning fonts on the system blocker overlay, overriding wildcard Patrick Hand */
+.danger-layout, .danger-layout * {
+  font-family: 'Courier New', Courier, monospace !important;
+}
