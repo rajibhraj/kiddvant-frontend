@@ -331,3 +331,174 @@ export const updateSiteConfig = async (configData: any, token: string) => {
 
   return data;
 };
+
+/**
+ * Submit a contact request.
+ */
+export const submitContactMessage = async (formData: {
+  name: string;
+  email: string;
+  phone?: string;
+  topic: string;
+  message: string;
+}) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/contact`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Failed to submit message (status ${response.status})`);
+  }
+
+  return data;
+};
+
+/**
+ * Subscribe email to newsletter.
+ */
+export const subscribeNewsletter = async (email: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/contact/subscribe`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Failed to subscribe (status ${response.status})`);
+  }
+
+  return data;
+};
+
+/**
+ * Fetch all contact messages (Admin).
+ */
+export const fetchContacts = async (token: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/contact`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Failed to fetch contacts (status ${response.status})`);
+  }
+
+  return data;
+};
+
+/**
+ * Fetch all newsletter subscribers (Admin).
+ */
+export const fetchSubscribers = async (token: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/contact/subscribers`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Failed to fetch subscribers (status ${response.status})`);
+  }
+
+  return data;
+};
+
+/**
+ * Update contact status (Admin).
+ */
+export const updateContactStatus = async (id: string, status: string, token: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/contact/${id}/status`;
+
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Failed to update status (status ${response.status})`);
+  }
+
+  return data;
+};
+
+/**
+ * Delete a contact message (Admin).
+ */
+export const deleteContact = async (id: string, token: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/contact/${id}`;
+
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Accept": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Failed to delete contact (status ${response.status})`);
+  }
+
+  return data;
+};
+
+/**
+ * Delete a subscriber (Admin).
+ */
+export const deleteSubscriber = async (id: string, token: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const url = `${baseUrl}/contact/subscribers/${id}`;
+
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Accept": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || `Failed to delete subscriber (status ${response.status})`);
+  }
+
+  return data;
+};

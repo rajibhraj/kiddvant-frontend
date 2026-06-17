@@ -8,6 +8,7 @@ import { useCart } from "@/context/CartContext";
 import { useCartSidebar } from "@/context/CartSidebarContext";
 import ProductModal from "@/components/ProductModal";
 import { Product } from "@/lib/products";
+import { getSafeImageUrl } from "@/lib/utils";
 
 export default function BestSellers() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -46,7 +47,7 @@ export default function BestSellers() {
             >
               <div className="relative aspect-square bg-gray-50">
               {product.product_image &&  <Image
-                  src={product.product_image}
+                  src={getSafeImageUrl(product.product_image)}
                   alt={product.product_name}
                   fill
                   className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"

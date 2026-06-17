@@ -201,15 +201,19 @@
 }
 
 
-* { 
-  font-family: "Patrick Hand", cursive; 
+html, body, button, input, select, textarea {
+  font-family: 'Roboto', sans-serif !important;
+}
+
+/* Force Patrick Hand font family on specified pages/containers */
+.font-patrick, .font-patrick * {
+  font-family: "Patrick Hand", cursive !important;
 }
 
 /* Force Roboto font family inside admin dashboard views, overriding wildcard styles */
 .admin-layout, .admin-layout * {
   font-family: 'Roboto', sans-serif !important;
 }
-
 
 .roboto {
   font-family: 'Roboto', sans-serif !important;
