@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { getSafeImageUrl } from "@/lib/utils";
 
 // ─── Types ─────────────────────────────────────────────────────────
 export interface Product {
@@ -123,7 +124,7 @@ const CartItemRow = ({ item, onUpdateQuantity, onRemove }: CartItemRowProps) => 
       {/* Product Image */}
       <div className="relative w-24 h-24 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden">
       {item.product_image && <Image
-          src={item.product_image}
+          src={getSafeImageUrl(item.product_image)}
           alt={item.product_name}
           fill
           className="object-contain p-2"
@@ -524,7 +525,7 @@ const CheckoutForm = ({ cartItems, onBackToCart, onPlaceOrder, isPlacingOrder }:
                 <div key={item.id} className="flex gap-3">
                   <div className="relative w-12 h-12 flex-shrink-0 bg-white rounded-lg overflow-hidden">
                   {item.product_image && <Image
-                      src={item.product_image}
+                      src={getSafeImageUrl(item.product_image)}
                       alt={item.product_name}
                       fill
                       className="object-contain p-1"
