@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { placeOrder } from "@/lib/api";
+import { getSafeImageUrl } from "@/lib/utils";
 
 // ── Types ─────────────────────────────────────────────────────────────
 interface OrderData {
@@ -247,7 +248,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                         {/* Image */}
                         <div className="relative w-[72px] h-[72px] flex-shrink-0 bg-gray-50 rounded-xl overflow-hidden border border-gray-100">
                        {item.product_image &&  <Image
-                            src={item.product_image}
+                            src={getSafeImageUrl(item.product_image)}
                             alt={item.product_name}
                             fill
                             className="object-contain p-1.5"

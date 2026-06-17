@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Product } from "@/lib/products";
+import { getSafeImageUrl } from "@/lib/utils";
 
 // Re-export so other files can import Product from here if needed
 export type { Product };
@@ -192,7 +193,7 @@ const ProductCard = ({ product, index, isHovered, onHover, onAddToCart, onViewDe
         {/* Product Image Container */}
         <div className="relative w-full aspect-square mb-3 flex items-center justify-center">
         {product.product_image && <Image
-            src={product.product_image}
+            src={getSafeImageUrl(product.product_image)}
             alt={product.product_name}
             width={200}
             height={200}
@@ -345,7 +346,7 @@ export default function PopularPicks({ products, onAddToCart, onViewDetails }: P
             >
               {products.map((product, index) => (
                 <ProductCard
-                  key={product.id}
+                  key={product._id || `${product.id}-${index}`}
                   product={product}
                   index={index}
                   isHovered={hoveredIndex === index}

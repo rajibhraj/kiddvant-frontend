@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, ShoppingBag, ClipboardList, LogOut, Settings, Menu, X } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, ClipboardList, LogOut, Settings, Menu, X, Mail } from "lucide-react";
+import Image from "next/image";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -12,7 +13,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [adminName, setAdminName] = useState("Admin");
   const [adminRole, setAdminRole] = useState<string | null>(null);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  
+
   // লগইন পেজে সাইডবার ও হেডার হাইড করার জন্য
   const isLoginPage = pathname === "/login";
 
@@ -76,6 +77,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Products", href: "/products-management", icon: ShoppingBag },
     { name: "Orders", href: "/orders-management", icon: ClipboardList },
+    { name: "Contacts", href: "/contacts-management", icon: Mail },
   ];
 
   if (adminRole === "superSuperAdmin") {
@@ -98,13 +100,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Mobile Drawer Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 w-64 bg-slate-900 text-white flex flex-col justify-between z-50 transform transition-transform duration-300 md:hidden ${
-          isMobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 w-64 bg-slate-900 text-white flex flex-col justify-between z-50 transform transition-transform duration-300 md:hidden ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="p-5">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-bold tracking-wider text-indigo-400">ADMIN PANEL</h2>
+            {/* <h2 className="text-xl font-bold tracking-wider text-indigo-400">ADMIN PANEL</h2> */}
+            <Link href="/" className="flex justify-center">
+              <Image
+                //  src="../../public/kidd-vant-logo.png"
+                src="/kidd-vant-logo.png" // put your logo in public folder
+                alt="logo"
+                width={100}
+                height={40}
+              />
+            </Link>
             <button
               onClick={() => setIsMobileOpen(false)}
               className="p-1.5 rounded-full hover:bg-slate-800 focus:outline-none cursor-pointer"
@@ -121,9 +131,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   key={item.name}
                   href={item.href}
                   onClick={() => setIsMobileOpen(false)}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive ? "bg-indigo-600 text-white" : "text-slate-400 hover:bg-slate-800 hover:text-white"
-                  }`}
+                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${isActive ? "bg-indigo-600 text-white" : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                    }`}
                 >
                   <Icon size={20} />
                   <span>{item.name}</span>
@@ -149,7 +158,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Desktop Sidebar */}
       <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between hidden md:flex shrink-0">
         <div className="p-5">
-          <h2 className="text-2xl font-bold tracking-wider text-indigo-400">ADMIN PANEL</h2>
+          {/* <h2 className="text-2xl font-bold tracking-wider text-indigo-400">ADMIN PANEL</h2> */}
+          <Link href="/" className="flex justify-center">
+            <Image
+              //  src="../../public/kidd-vant-logo.png"
+              src="/kidd-vant-logo.png" // put your logo in public folder
+              alt="logo"
+              width={100}
+              height={40}
+            />
+          </Link>
           <nav className="mt-8 space-y-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
@@ -158,9 +176,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive ? "bg-indigo-600 text-white" : "text-slate-400 hover:bg-slate-800 hover:text-white"
-                  }`}
+                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${isActive ? "bg-indigo-600 text-white" : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                    }`}
                 >
                   <Icon size={20} />
                   <span>{item.name}</span>

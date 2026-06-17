@@ -6,6 +6,7 @@ import { X, ShoppingCart } from "lucide-react";
 import { Product } from "@/lib/products";
 import { useCart } from "@/context/CartContext";
 import { useCartSidebar } from "@/context/CartSidebarContext";
+import { getSafeImageUrl } from "@/lib/utils";
 
 interface ProductModalProps {
   product: Product | null;
@@ -38,8 +39,8 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
         <div className="grid md:grid-cols-2 gap-6 p-6">
           {/* Product Image */}
           <div className="relative aspect-square bg-gray-50 rounded-xl overflow-hidden">
-         {product.product_image &&   <Image
-              src={product.product_image}
+          {product.product_image &&   <Image
+              src={getSafeImageUrl(product.product_image)}
               alt={product.product_name}
               fill
               className="object-contain p-4"

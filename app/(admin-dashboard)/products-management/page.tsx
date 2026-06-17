@@ -5,6 +5,7 @@ import {
   Plus, Search, Edit3, Trash2, Eye, X, AlertTriangle,
   Package, Tag, DollarSign, Layers, Star, Truck, CheckCircle, XCircle,
 } from "lucide-react";
+import { getSafeImageUrl } from "@/lib/utils";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://192.168.50.130:5000/api";
 
@@ -202,6 +203,63 @@ function EditModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  const [tagInput, setTagInput] = useState("");
+  const [imageInput, setImageInput] = useState("");
+
+  const handleTagInputChange = (val: string) => {
+    if (val.endsWith(",")) {
+      const newTag = val.slice(0, -1).trim();
+      if (newTag && !form.tags.includes(newTag)) {
+        set("tags", [...form.tags, newTag]);
+      }
+      setTagInput("");
+    } else {
+      setTagInput(val);
+    }
+  };
+
+  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const newTag = tagInput.trim();
+      if (newTag && !form.tags.includes(newTag)) {
+        set("tags", [...form.tags, newTag]);
+      }
+      setTagInput("");
+    }
+  };
+
+  const removeTag = (indexToRemove: number) => {
+    set("tags", form.tags.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  const handleImageInputChange = (val: string) => {
+    if (val.endsWith(",")) {
+      const newImg = val.slice(0, -1).trim();
+      if (newImg && !form.images.includes(newImg)) {
+        set("images", [...form.images, newImg]);
+      }
+      setImageInput("");
+    } else {
+      setImageInput(val);
+    }
+  };
+
+  const handleImageInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const newImg = imageInput.trim();
+      if (newImg && !form.images.includes(newImg)) {
+        set("images", [...form.images, newImg]);
+      }
+      setImageInput("");
+    }
+  };
+
+  const removeImage = (indexToRemove: number) => {
+    set("images", form.images.filter((_, idx) => idx !== indexToRemove));
+  };
+
   const set = (field: keyof EditForm, value: unknown) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
@@ -265,10 +323,32 @@ function EditModal({
               <Field label="SKU">
                 <input className={inputCls} value={form.sku} onChange={(e) => set("sku", e.target.value)} />
               </Field>
-              <Field label="Tags (comma separated)">
-                <input className={inputCls}
-                  value={form.tags.join(", ")}
-                  onChange={(e) => set("tags", e.target.value.split(",").map((t) => t.trim()).filter(Boolean))} />
+              <Field label="Tags (Press Enter or Comma to add)">
+                <div className="flex flex-col gap-1.5">
+                  <input 
+                    className={inputCls}
+                    placeholder="Type tag and press Enter or Comma"
+                    value={tagInput}
+                    onChange={(e) => handleTagInputChange(e.target.value)}
+                    onKeyDown={handleTagInputKeyDown}
+                  />
+                  {form.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {form.tags.map((tag, idx) => (
+                        <span key={idx} className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                          {tag}
+                          <button
+                            type="button"
+                            onClick={() => removeTag(idx)}
+                            className="hover:bg-indigo-100 rounded-full p-0.5 transition-colors text-indigo-500 hover:text-indigo-800"
+                          >
+                            <X size={12} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </Field>
             </div>
             <Field label="Description">
@@ -325,10 +405,39 @@ function EditModal({
             <Field label="Thumbnail URL">
               <input className={inputCls} value={form.thumbnail} onChange={(e) => set("thumbnail", e.target.value)} />
             </Field>
-            <Field label="Image URLs (one per line)">
-              <textarea rows={3} className={inputCls}
-                value={form.images.join("\n")}
-                onChange={(e) => set("images", e.target.value.split("\n").map((s) => s.trim()).filter(Boolean))} />
+            <Field label="Image URLs (Press Enter or Comma to add)">
+              <div className="flex flex-col gap-1.5">
+                <input 
+                  className={inputCls}
+                  placeholder="Paste URL and press Enter or Comma"
+                  value={imageInput}
+                  onChange={(e) => handleImageInputChange(e.target.value)}
+                  onKeyDown={handleImageInputKeyDown}
+                />
+                {form.images.length > 0 && (
+                  <div className="space-y-1.5 mt-1 max-h-40 overflow-y-auto border border-slate-100 rounded-lg p-2 bg-slate-50/50">
+                    {form.images.map((img, idx) => (
+                      <div key={idx} className="flex items-center justify-between gap-3 bg-white border border-slate-200 rounded-lg p-1.5 pl-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-8 h-8 rounded bg-slate-50 border border-slate-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={getSafeImageUrl(img)} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/Product/p1.jpg'; }} />
+                          </div>
+                          <span className="text-xs text-slate-600 truncate font-mono select-all" title={img}>{img}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeImage(idx)}
+                          className="p-1 hover:bg-red-50 rounded text-red-500 hover:text-red-700 flex-shrink-0 transition-colors"
+                          title="Delete image"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </Field>
           </div>
 

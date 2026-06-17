@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { fetchSiteConfig } from "@/lib/api";
+import Image from "next/image";
 
 interface SiteConfig {
   active: boolean;
@@ -99,8 +100,9 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
     return (
       <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-50 font-sans">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-slate-800">Initializing Application...</h3>
+          {/* <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" /> */}
+        <Image src="/loading.gif" alt="Logo" className="mx-auto" width={150} height={150} />
+          {/* <h3 className="text-lg font-semibold text-slate-800">Initializing Application...</h3> */}
           <p className="text-sm text-slate-500">Checking system configuration</p>
         </div>
       </div>
