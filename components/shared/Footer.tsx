@@ -5,8 +5,10 @@ import Link from "next/link";
 import { 
   Music2, 
   ArrowRight,
-  Accessibility
+  Accessibility,
+  Check
 } from "lucide-react";
+import { subscribeNewsletter } from "@/lib/api";
 
 // Social media icons as SVG components since lucide-react doesn't have them
 const InstagramIcon = () => (
@@ -114,18 +116,38 @@ const legalLinks = [
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [agreed, setAgreed] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [statusMsg, setStatusMsg] = useState("");
   const pathname = usePathname();
 
   if (pathname === "/update" || pathname.startsWith("/update/")) {
     return null;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && agreed) {
-      alert("Thank you for subscribing!");
+    if (!email) {
+      setStatus("error");
+      setStatusMsg("Email address is required.");
+      return;
+    }
+    if (!agreed) {
+      setStatus("error");
+      setStatusMsg("You must agree to the terms.");
+      return;
+    }
+
+    setStatus("loading");
+    setStatusMsg("");
+    try {
+      await subscribeNewsletter(email.trim());
+      setStatus("success");
       setEmail("");
       setAgreed(false);
+    } catch (err: any) {
+      console.error("Failed to subscribe newsletter:", err);
+      setStatus("error");
+      setStatusMsg(err.message || "Failed to subscribe. Please try again.");
     }
   };
 
@@ -233,55 +255,89 @@ export default function Footer() {
                 </div>
               </div>
 
-              <h3 className="text-white text-center font-bold text-lg tracking-wider mb-1">
-                SIGN UP & SAVE
-              </h3>
-              <p className="text-white text-center text-sm mb-6">
-                ON YOUR FIRST ORDER
-              </p>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="relative">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email address"
-                    className="w-full px-4 py-3 rounded-full bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 pr-12"
-                    required
-                  />
+              {status === "success" ? (
+                <div className="bg-white/10 border border-white/20 p-5 rounded-2xl text-center text-white space-y-3 animate-fade-in">
+                  <div className="mx-auto flex size-10 items-center justify-center rounded-full bg-white/25 text-white">
+                    <Check className="size-5" />
+                  </div>
+                  <h4 className="font-bold text-xs tracking-wider uppercase">Subscribed successfully!</h4>
+                  <p className="text-xs text-white/80">
+                    Thank you for joining our newsletter. Keep an eye on your inbox!
+                  </p>
                   <button
-                    type="submit"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-600 hover:text-blue-600 transition"
+                    type="button"
+                    onClick={() => setStatus("idle")}
+                    className="text-white hover:underline text-[10px] uppercase font-bold pt-1"
                   >
-                    <ArrowRight size={18} />
+                    Subscribe Another
                   </button>
                 </div>
+              ) : (
+                <>
+                  <h3 className="text-white text-center font-bold text-lg tracking-wider mb-1">
+                    SIGN UP & SAVE
+                  </h3>
+                  <p className="text-white text-center text-sm mb-6">
+                    ON YOUR FIRST ORDER
+                  </p>
 
-                <div className="flex items-start gap-3">
-                  <input
-                    type="checkbox"
-                    id="agree"
-                    checked={agreed}
-                    onChange={(e) => setAgreed(e.target.checked)}
-                    className="mt-1 w-4 h-4 rounded border-white/50 bg-transparent text-blue-600 focus:ring-white"
-                  />
-                  <label htmlFor="agree" className="text-white/80 text-xs leading-relaxed">
-                    By providing your email address, you agree to our{" "}
-                    <Link href="/terms" className="underline hover:text-white">
-                      Terms of Use
-                    </Link>
-                    ,{" "}
-                    <Link href="/privacy" className="underline hover:text-white">
-                      Privacy Notice
-                    </Link>
-                    , and{" "}
-                    <Link href="/arbitration" className="underline hover:text-white">
-                      Arbitration Agreement
-                    </Link>
-                  </label>
-                </div>
-              </form>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="relative">
+                      <input
+                        type="email"
+                        value={email}
+                        disabled={status === "loading"}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Email address"
+                        className="w-full px-4 py-3 rounded-full bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 pr-12 disabled:opacity-80"
+                        required
+                      />
+                      <button
+                        type="submit"
+                        disabled={status === "loading"}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-600 hover:text-[#F6339A] transition disabled:opacity-50"
+                      >
+                        {status === "loading" ? (
+                          <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <ArrowRight size={18} />
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        id="agree"
+                        checked={agreed}
+                        disabled={status === "loading"}
+                        onChange={(e) => setAgreed(e.target.checked)}
+                        className="mt-1 w-4 h-4 rounded border-white/50 bg-transparent text-blue-600 focus:ring-white"
+                      />
+                      <label htmlFor="agree" className="text-white/80 text-xs leading-relaxed">
+                        By providing your email address, you agree to our{" "}
+                        <Link href="/terms" className="underline hover:text-white">
+                          Terms of Use
+                        </Link>
+                        ,{" "}
+                        <Link href="/privacy" className="underline hover:text-white">
+                          Privacy Notice
+                        </Link>
+                        , and{" "}
+                        <Link href="/arbitration" className="underline hover:text-white">
+                          Arbitration Agreement
+                        </Link>
+                      </label>
+                    </div>
+
+                    {status === "error" && (
+                      <p className="text-rose-100 text-[11px] text-center font-medium bg-red-950/20 py-1.5 px-2 rounded-lg border border-red-500/20">
+                        ⚠️ {statusMsg}
+                      </p>
+                    )}
+                  </form>
+                </>
+              )}
 
               {/* Social Links */}
               <div className="flex items-center justify-center gap-4 mt-8">

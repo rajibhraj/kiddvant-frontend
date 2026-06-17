@@ -7,6 +7,7 @@ import { useCartSidebar } from "@/context/CartSidebarContext";
 import ProductModal from "@/components/ProductModal";
 import { Product as LibProduct } from "@/lib/products";
 import { fetchProducts } from "@/lib/api";
+import { getSafeImageUrl } from "@/lib/utils";
 
 // ═══════════════════════════════════════════════════════════════════
 //  TYPES (exact shape from user's data)
@@ -14,6 +15,8 @@ import { fetchProducts } from "@/lib/api";
 
 export interface Product {
   id: number;
+  _id?: string;
+  productId?: string;
   product_name: string;
   brand?: string | null;
   material?: string;
@@ -344,8 +347,8 @@ function ProductCard({ product }: { product: Product }) {
 
       {/* Image */}
       <div className="relative w-full aspect-square mb-3 rounded-lg bg-gray-50 overflow-hidden flex items-center justify-center">
-       {product.product_image && <Image
-          src={product.product_image}
+        {product.product_image && <Image
+          src={getSafeImageUrl(product.product_image)}
           alt={product.product_name}
           width={220}
           height={220}
@@ -509,8 +512,8 @@ export default function CollectionTabs({ defaultTab = "all" }: CollectionTabsPro
             {/* ── Right: Product Grid ── */}
             <div className="flex-1 min-w-0">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-5">
-                {activeProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                {activeProducts.map((product, index) => (
+                  <ProductCard key={product._id || `${product.id}-${index}`} product={product} />
                 ))}
               </div>
 

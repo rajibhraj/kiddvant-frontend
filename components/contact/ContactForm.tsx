@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 import { Loader2, Send, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { submitContactMessage } from "@/lib/api";
 
 const topics = [
   { value: "order", label: "Order or shipping" },
@@ -19,17 +20,46 @@ export default function ContactForm() {
   const [topic, setTopic] = useState<(typeof topics)[number]["value"]>("order");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "success">("idle");
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError(null);
+
+    // Client-side validations
+    if (!name.trim()) {
+      setError("Name is required");
+      return;
+    }
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+    if (!message.trim()) {
+      setError("Message is required");
+      return;
+    }
+
     setStatus("sending");
-    await new Promise((r) => setTimeout(r, 600));
-    setStatus("success");
-    setName("");
-    setEmail("");
-    setPhone("");
-    setTopic("order");
-    setMessage("");
+    try {
+      await submitContactMessage({
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim() || undefined,
+        topic,
+        message: message.trim(),
+      });
+      setStatus("success");
+      setName("");
+      setEmail("");
+      setPhone("");
+      setTopic("order");
+      setMessage("");
+    } catch (err: any) {
+      console.error("Failed to submit contact form:", err);
+      setError(err.message || "Something went wrong. Please try again.");
+      setStatus("idle");
+    }
   }
 
   if (status === "success") {
@@ -66,6 +96,12 @@ export default function ContactForm() {
       className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8"
       noValidate
     >
+      {error && (
+        <div className="mb-6 p-4 bg-destructive/10 text-destructive text-sm border border-destructive/20 rounded-xl flex items-center gap-2">
+          <span className="shrink-0 font-bold">⚠️</span>
+          <span>{error}</span>
+        </div>
+      )}
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="sm:col-span-1">
           <label

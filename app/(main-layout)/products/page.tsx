@@ -9,6 +9,7 @@ import { useCartSidebar } from "@/context/CartSidebarContext";
 import ProductModal from "@/components/ProductModal";
 import { Product } from "@/lib/products";
 import { fetchProducts } from "@/lib/api";
+import { getSafeImageUrl } from "@/lib/utils";
 
 export default function ProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -197,7 +198,7 @@ export default function ProductsPage() {
                 {/* Image */}
                 <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
                   {product.product_image &&  <Image
-                    src={product.product_image}
+                    src={getSafeImageUrl(product.product_image)}
                     alt={product.product_name}
                     fill
                     className="object-contain p-6 group-hover:scale-110 transition-transform duration-500"
@@ -273,7 +274,7 @@ export default function ProductsPage() {
                   {/* Image */}
                   <div className="relative w-full md:w-64 h-64 bg-gradient-to-br from-gray-50 to-gray-100">
                  {product.product_image &&    <Image
-                      src={product.product_image}
+                      src={getSafeImageUrl(product.product_image)}
                       alt={product.product_name}
                       fill
                       className="object-contain p-6"
